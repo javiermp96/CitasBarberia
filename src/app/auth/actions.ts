@@ -19,22 +19,23 @@ export async function login(formData: FormData) {
         redirect('/login?message=Could not authenticate user')
     }
 
-    // Generate Access Log
     if (data?.user) {
-        await supabase.from('access_logs').insert({
-            user_id: data.user.id,
-            action: 'LOGIN'
-        })
-    }
+        // Run both DB operations concurrently
+        const [_, roleResponse] = await Promise.all([
+            // Generate Access Log
+            supabase.from('access_logs').insert({
+                user_id: data.user.id,
+                action: 'LOGIN'
+            }),
+            // Fetch role from users table
+            supabase
+                .from('users')
+                .select('role')
+                .eq('id', data.user.id)
+                .single()
+        ])
 
-    // After login, check if user is admin, superadmin, or client
-    if (data?.user) {
-        // Fetch role from users table
-        const { data: userProfile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', data.user.id)
-            .single()
+        const userProfile = roleResponse.data
 
         if (userProfile?.role === 'SUPERADMIN') {
             revalidatePath('/', 'layout')

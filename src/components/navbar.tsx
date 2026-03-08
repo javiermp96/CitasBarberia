@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { signout } from '@/app/auth/actions'
-import { Button } from '@/components/ui/button'
+import NavLinks from './nav-links'
 
 export default async function Navbar() {
     const supabase = await createClient()
@@ -20,34 +20,8 @@ export default async function Navbar() {
                     <span className="font-bold text-xl uppercase tracking-tighter">Cheri Barber</span>
                 </Link>
 
-                <nav className="flex items-center space-x-4">
-                    {user ? (
-                        <>
-                            {role === 'ADMIN' && (
-                                <Link href="/barber/dashboard">
-                                    <Button variant="ghost">Barbero</Button>
-                                </Link>
-                            )}
-                            {role === 'SUPERADMIN' && (
-                                <Link href="/superadmin/dashboard">
-                                    <Button variant="ghost">Superadmin</Button>
-                                </Link>
-                            )}
-                            <Link href="/book">
-                                <Button variant="ghost">Reservar</Button>
-                            </Link>
-                            <Link href="/profile">
-                                <Button variant="ghost">Mi Perfil</Button>
-                            </Link>
-                            <form action={signout}>
-                                <Button type="submit" variant="outline">Salir</Button>
-                            </form>
-                        </>
-                    ) : (
-                        <Link href="/login">
-                            <Button>Iniciar Sesión</Button>
-                        </Link>
-                    )}
+                <nav className="flex items-center">
+                    <NavLinks user={user} role={role} signoutAction={signout} />
                 </nav>
             </div>
         </header>

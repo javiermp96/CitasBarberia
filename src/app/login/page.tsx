@@ -25,11 +25,11 @@ export default async function LoginPage({
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" required placeholder="correo@ejemplo.com" className="bg-background/50" />
+                            <Input id="email" name="email" type="email" required placeholder="correo@ejemplo.com" className="bg-background/50 h-12" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Contraseña</Label>
-                            <Input id="password" name="password" type="password" required className="bg-background/50" />
+                            <Input id="password" name="password" type="password" required className="bg-background/50 h-12" />
                         </div>
 
                         {sp?.message && (
@@ -39,7 +39,7 @@ export default async function LoginPage({
                         )}
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4">
-                        <Button type="submit" formAction={login} className="w-full h-11 text-base shadow-lg shadow-primary/20">
+                        <Button type="submit" formAction={login} className="w-full h-12 text-base shadow-lg shadow-primary/20">
                             Iniciar Sesión
                         </Button>
                     </CardFooter>
