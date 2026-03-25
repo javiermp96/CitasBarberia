@@ -1,11 +1,11 @@
 import { supabase } from '../lib/supabase'
 
 export async function assertUserAuth() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('No user logged in')
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) throw new Error('No user logged in')
     
-    const { data } = await supabase.from('users').select('role, name, email').eq('id', user.id).single()
-    return { user, profile: data }
+    const { data } = await supabase.from('users').select('role, name, email').eq('id', session.user.id).single()
+    return { user: session.user, profile: data }
 }
 
 export async function getAdminAppointments() {
@@ -157,7 +157,7 @@ export async function getAvailableSlots(dateString: string, serviceDuration: num
     const { data: availabilities, error: availError } = await supabase
         .from('availability')
         .select('*')
-        .in('status', ['AVAILABLE', 'BREAK'])
+        .eq('status', 'AVAILABLE')
         .gte('start_time', startOfDay.toISOString())
         .lte('start_time', endOfDay.toISOString())
 
