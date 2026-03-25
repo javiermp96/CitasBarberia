@@ -31,6 +31,33 @@ export async function login(formData: FormData) {
 
         const userProfile = roleResponse.data as any
 
+        // FIRE EMAIL NOTIFICATION TO ADMIN
+        try {
+            const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+            const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+            const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+            
+            if (serviceId && templateId && publicKey) {
+                // Do not await this so it doesn't block login
+                fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        service_id: serviceId,
+                        template_id: templateId,
+                        user_id: publicKey,
+                        template_params: {
+                            to_email: 'cheribarberr@gmail.com',
+                            client_name: email,
+                            appointment_date: `Inicio de sesión por: ${email} (${userProfile?.role || 'CLIENT'})`
+                        }
+                    })
+                }).catch(err => console.error("Error sending notify:", err))
+            }
+        } catch (err) {
+            console.error("No se pudo enviar notificacion de login", err)
+        }
+
         if (userProfile?.role === 'SUPERADMIN') {
             return { redirect: '/superadmin/dashboard' }
         }
