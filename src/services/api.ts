@@ -45,6 +45,11 @@ export async function getAvailabilities() {
 }
 
 export async function addAvailability(dateStr: string, startHour: string, endHour: string, status: string = 'AVAILABLE') {
+    const { profile } = await assertUserAuth()
+    if (profile?.role !== 'ADMIN' && profile?.role !== 'SUPERADMIN') {
+        return { error: 'Acceso denegado. Solo el barbero puede modificar descansos.' }
+    }
+
     const startT = new Date(`${dateStr}T${startHour}:00`)
     const endT = new Date(`${dateStr}T${endHour}:00`)
 
@@ -63,6 +68,11 @@ export async function addAvailability(dateStr: string, startHour: string, endHou
 }
 
 export async function deleteAvailability(id: string) {
+    const { profile } = await assertUserAuth()
+    if (profile?.role !== 'ADMIN' && profile?.role !== 'SUPERADMIN') {
+        return { error: 'Acceso denegado.' }
+    }
+
     const { error } = await supabase.from('availability').delete().eq('id', id)
     if (error) return { error: error.message }
     return { success: true }
@@ -231,7 +241,7 @@ export async function createAppointment(serviceId: string, dateTime: string) {
                         template_id: templateId,
                         user_id: publicKey,
                         template_params: {
-                            to_email: admins[0].email,
+                            to_email: 'cheribarberr@gmail.com',
                             client_name: profile?.name || 'Cliente',
                             appointment_date: new Date(dateTime).toLocaleString('es-ES')
                         }

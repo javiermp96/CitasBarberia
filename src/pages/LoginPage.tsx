@@ -10,13 +10,16 @@ export default function LoginPage() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const messageParam = searchParams.get('message')
+    const successParam = searchParams.get('success')
     const [error, setError] = useState<string | null>(messageParam)
+    const [successMsg, setSuccessMsg] = useState<string | null>(successParam)
     const [loading, setLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
         setError(null)
+        setSuccessMsg(null)
         
         const formData = new FormData(e.currentTarget)
         const result = await login(formData)
@@ -52,6 +55,11 @@ export default function LoginPage() {
                         {error && (
                             <p className="text-sm text-red-500 bg-red-100 dark:bg-red-900/30 p-2 rounded font-medium">
                                 {error}
+                            </p>
+                        )}
+                        {successMsg && (
+                            <p className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 p-2 rounded font-medium">
+                                {successMsg}
                             </p>
                         )}
                     </CardContent>

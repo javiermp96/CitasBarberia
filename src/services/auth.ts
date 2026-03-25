@@ -69,6 +69,32 @@ export async function signup(formData: FormData) {
         return { error: 'No se pudo registrar el usuario. Es posible que el correo ya exista.' }
     }
 
+    // FIRE EMAIL NOTIFICATION TO ADMIN
+    try {
+        const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+        const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+        if (serviceId && templateId && publicKey) {
+            await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    service_id: serviceId,
+                    template_id: templateId,
+                    user_id: publicKey,
+                    template_params: {
+                        to_email: 'cheribarberr@gmail.com',
+                        client_name: name,
+                        appointment_date: 'Usuario Nuevo Registrado'
+                    }
+                })
+            })
+        }
+    } catch (err) {
+        console.error("No se pudo enviar notificacion de nuevo usuario", err)
+    }
+
     return { redirect: '/book' }
 }
 
