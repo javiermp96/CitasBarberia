@@ -87,16 +87,18 @@ export async function deleteAppointment(appointmentId: string) {
 export async function getAdminServices() {
     const { data, error } = await supabase.from('services').select('*').order('name', { ascending: true })
     if (error) throw new Error(error.message)
-    return data
+    return data?.filter(s => s.name.trim().toLowerCase() !== 'descanso') || []
 }
 
 export async function addService(name: string, duration: number) {
+    if (name.trim().toLowerCase() === 'descanso') return { error: 'Los descansos se configuran en "Disponibilidad", no como un servicio.' }
     const { error } = await supabase.from('services').insert({ name, duration })
     if (error) return { error: error.message }
     return { success: true }
 }
 
 export async function updateService(id: string, name: string, duration: number) {
+    if (name.trim().toLowerCase() === 'descanso') return { error: 'Los descansos se configuran en "Disponibilidad", no como un servicio.' }
     const { error } = await supabase.from('services').update({ name, duration }).eq('id', id)
     if (error) return { error: error.message }
     return { success: true }
