@@ -93,7 +93,8 @@ export async function signup(formData: FormData) {
     })
 
     if (error) {
-        return { error: 'No se pudo registrar el usuario. Es posible que el correo ya exista.' }
+        console.error("Signup error details:", error)
+        return { error: `No se pudo registrar. Detalles: ${error.message} (${error.status || 'unknown status'})` }
     }
 
     // FIRE EMAIL NOTIFICATION TO ADMIN
