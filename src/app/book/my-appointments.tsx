@@ -1,25 +1,46 @@
-import { createClient } from '@/lib/supabase/server'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { assertUserAuth } from '@/services/api'
+import { supabase } from '@/lib/supabase'
 
-export async function MyAppointments() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+export function MyAppointments() {
+    const [appointments, setAppointments] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
 
-    if (!user) return null
+    useEffect(() => {
+        async function load() {
+            try {
+                const { user } = await assertUserAuth()
+                const { data } = await supabase
+                    .from('appointments')
+                    .select(`
+                      id,
+                      date_time,
+                      status,
+                      services(name, duration)
+                    `)
+                    .eq('user_id', user.id)
+                    .order('date_time', { ascending: false })
+                
+                setAppointments(data || [])
+            } catch (err) {
+                // handle error silently
+            } finally {
+                setLoading(false)
+            }
+        }
+        load()
+    }, [])
 
-    // Get appointments for the logged-in user
-    const { data: appointments } = await supabase
-        .from('appointments')
-        .select(`
-      id,
-      date_time,
-      status,
-      services(name, duration)
-    `)
-        .eq('user_id', user.id)
-        .order('date_time', { ascending: false })
+    if (loading) {
+        return (
+            <div className="mt-12 text-center text-muted-foreground p-8 border rounded-lg bg-white/50 animate-pulse">
+                <p>Cargando tus citas anteriores...</p>
+            </div>
+        )
+    }
 
     if (!appointments || appointments.length === 0) {
         return (

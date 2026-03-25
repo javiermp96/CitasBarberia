@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -7,7 +5,8 @@ import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { getAvailableSlots, createAppointment } from './actions'
+import { getAvailableSlots, createAppointment } from '@/services/api'
+import { useNavigate } from 'react-router-dom'
 
 type Service = {
     id: string
@@ -16,6 +15,7 @@ type Service = {
 }
 
 export function BookingForm({ services, userName }: { services: Service[], userName: string }) {
+    const navigate = useNavigate()
     const [selectedService, setSelectedService] = useState<Service | null>(null)
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [availableSlots, setAvailableSlots] = useState<string[]>([])
@@ -23,7 +23,6 @@ export function BookingForm({ services, userName }: { services: Service[], userN
     const [loadingSlots, setLoadingSlots] = useState(false)
     const [processing, setProcessing] = useState(false)
 
-    // Fetch available slots when Service or Date changes
     useEffect(() => {
         if (selectedService && date) {
             setLoadingSlots(true)
@@ -49,19 +48,20 @@ export function BookingForm({ services, userName }: { services: Service[], userN
         const result = await createAppointment(selectedService.id, selectedSlot)
         setProcessing(false)
 
-        if (result.error) {
+        if (result?.error) {
             toast.error(result.error)
         } else {
             toast.success('¡Cita reservada con éxito!')
             setSelectedService(null)
             setSelectedSlot(null)
             setDate(new Date())
+            // Navigate or refresh state to see new appointments could be done here
+            navigate('/book')
         }
     }
 
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-            {/* 1. Seleccionar Servicio */}
             <Card>
                 <CardHeader>
                     <CardTitle>1. Servicio</CardTitle>
@@ -84,7 +84,6 @@ export function BookingForm({ services, userName }: { services: Service[], userN
                 </CardContent>
             </Card>
 
-            {/* 2. Seleccionar Fecha */}
             <Card className={!selectedService ? 'opacity-50 pointer-events-none' : ''}>
                 <CardHeader>
                     <CardTitle>2. Fecha</CardTitle>
@@ -96,13 +95,12 @@ export function BookingForm({ services, userName }: { services: Service[], userN
                         selected={date}
                         onSelect={setDate}
                         className="rounded-md border shadow"
-                        disabled={(date) => date < new Date() || date.getDay() === 0} // Ejemplo: Deshabilitar domingos y pasado
+                        disabled={(date) => date < new Date() || date.getDay() === 0}
                         locale={es}
                     />
                 </CardContent>
             </Card>
 
-            {/* 3. Seleccionar Hora */}
             <Card className={!date || !selectedService ? 'opacity-50 pointer-events-none' : ''}>
                 <CardHeader>
                     <CardTitle>3. Hora</CardTitle>

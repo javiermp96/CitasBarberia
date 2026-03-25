@@ -1,21 +1,28 @@
-'use client'
-
 import { useState } from 'react'
-import Link from 'next/link'
+import { Link, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { signout } from '../services/auth'
 
 interface NavLinksProps {
     user: any;
     role: string;
-    signoutAction: () => Promise<void>;
 }
 
-export default function NavLinks({ user, role, signoutAction }: NavLinksProps) {
+export default function NavLinks({ user, role }: NavLinksProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const navigate = useNavigate()
 
     const toggleMenu = () => setIsOpen(!isOpen)
     const closeMenu = () => setIsOpen(false)
+
+    const handleSignout = async () => {
+        closeMenu()
+        const result = await signout()
+        if (result.redirect) {
+            navigate(result.redirect)
+        }
+    }
 
     // Main links mapped depending on the user status and role
     const links = []
@@ -35,16 +42,14 @@ export default function NavLinks({ user, role, signoutAction }: NavLinksProps) {
                 {user ? (
                     <>
                         {links.map((link) => (
-                            <Link key={link.href} href={link.href}>
+                            <Link key={link.href} to={link.href}>
                                 <Button variant="ghost">{link.label}</Button>
                             </Link>
                         ))}
-                        <form action={signoutAction}>
-                            <Button type="submit" variant="outline">Salir</Button>
-                        </form>
+                        <Button variant="outline" onClick={handleSignout}>Salir</Button>
                     </>
                 ) : (
-                    <Link href="/login">
+                    <Link to="/login">
                         <Button>Iniciar Sesión</Button>
                     </Link>
                 )}
@@ -63,18 +68,18 @@ export default function NavLinks({ user, role, signoutAction }: NavLinksProps) {
                     {user ? (
                         <>
                             {links.map((link) => (
-                                <Link key={link.href} href={link.href} onClick={closeMenu} className="w-full text-center px-4">
+                                <Link key={link.href} to={link.href} onClick={closeMenu} className="w-full text-center px-4">
                                     <Button variant="ghost" className="w-full justify-center h-12 text-lg">{link.label}</Button>
                                 </Link>
                             ))}
-                            <form action={signoutAction} className="w-full px-4">
-                                <Button type="submit" variant="outline" className="w-full justify-center h-12 text-lg" onClick={closeMenu}>
+                            <div className="w-full px-4">
+                                <Button variant="outline" className="w-full justify-center h-12 text-lg" onClick={handleSignout}>
                                     Salir
                                 </Button>
-                            </form>
+                            </div>
                         </>
                     ) : (
-                        <Link href="/login" onClick={closeMenu} className="w-full text-center px-4">
+                        <Link to="/login" onClick={closeMenu} className="w-full text-center px-4">
                             <Button className="w-full justify-center h-12 text-lg">Iniciar Sesión</Button>
                         </Link>
                     )}

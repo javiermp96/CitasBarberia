@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] px-4 text-center">
@@ -13,9 +15,9 @@ export default function HomePage() {
         Reserva tu corte o arreglo de barba de forma rápida y sencilla. Elige tu servicio, tu hora y nosotros hacemos el resto.
       </p>
       <div className="flex gap-4">
-        <a href="/book" className="inline-flex items-center justify-center whitespace-nowrap rounded-full text-base font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95 h-14 px-10 py-3 shadow-xl shadow-primary/30">
+        <Link to="/book" className="inline-flex items-center justify-center whitespace-nowrap rounded-full text-base font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95 h-14 px-10 py-3 shadow-xl shadow-primary/30">
           Reservar Ahora
-        </a>
+        </Link>
       </div>
     </div>
   )

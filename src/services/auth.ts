@@ -1,12 +1,6 @@
-'use server'
-
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { supabase } from '../lib/supabase'
 
 export async function login(formData: FormData) {
-    const supabase = await createClient()
-
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
@@ -16,7 +10,7 @@ export async function login(formData: FormData) {
     })
 
     if (error) {
-        redirect('/login?message=Could not authenticate user')
+        return { error: 'No se pudo iniciar sesión. Verifica tus credenciales.' }
     }
 
     if (data?.user) {
@@ -35,26 +29,21 @@ export async function login(formData: FormData) {
                 .single()
         ])
 
-        const userProfile = roleResponse.data
+        const userProfile = roleResponse.data as any
 
         if (userProfile?.role === 'SUPERADMIN') {
-            revalidatePath('/', 'layout')
-            redirect('/superadmin/dashboard')
+            return { redirect: '/superadmin/dashboard' }
         }
 
         if (userProfile?.role === 'ADMIN') {
-            revalidatePath('/', 'layout')
-            redirect('/barber/dashboard')
+            return { redirect: '/barber/dashboard' }
         }
     }
 
-    revalidatePath('/', 'layout')
-    redirect('/book')
+    return { redirect: '/book' }
 }
 
 export async function signup(formData: FormData) {
-    const supabase = await createClient()
-
     const name = formData.get('name') as string
     const email = formData.get('email') as string
     const password = formData.get('password') as string
@@ -62,7 +51,7 @@ export async function signup(formData: FormData) {
     const dob = formData.get('dob') as string
 
     if (password !== passwordConfirm) {
-        redirect('/register?message=Las contraseñas no coinciden')
+        return { error: 'Las contraseñas no coinciden' }
     }
 
     const { error } = await supabase.auth.signUp({
@@ -77,16 +66,13 @@ export async function signup(formData: FormData) {
     })
 
     if (error) {
-        redirect('/register?message=Could not sign up user')
+        return { error: 'No se pudo registrar el usuario. Es posible que el correo ya exista.' }
     }
 
-    revalidatePath('/', 'layout')
-    redirect('/book')
+    return { redirect: '/book' }
 }
 
 export async function signout() {
-    const supabase = await createClient()
     await supabase.auth.signOut()
-    revalidatePath('/', 'layout')
-    redirect('/login')
+    return { redirect: '/login' }
 }

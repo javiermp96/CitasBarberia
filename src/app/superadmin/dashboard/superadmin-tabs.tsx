@@ -1,9 +1,6 @@
-'use client'
-
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,18 +24,17 @@ export function SuperadminTabs({
     initialLogs: LogEntry[]
     currentDate?: string
 }) {
-    const router = useRouter()
+    const navigate = useNavigate()
     const [dateFilter, setDateFilter] = useState(currentDate || '')
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newDate = e.target.value
         setDateFilter(newDate)
 
-        // Push date to URL to trigger server action re-fetch
         if (newDate) {
-            router.push(`/superadmin/dashboard?date=${newDate}`)
+            navigate(`/superadmin/dashboard?date=${newDate}`)
         } else {
-            router.push(`/superadmin/dashboard`)
+            navigate(`/superadmin/dashboard`)
         }
     }
 

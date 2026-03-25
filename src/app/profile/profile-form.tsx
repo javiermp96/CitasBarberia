@@ -1,13 +1,10 @@
-'use client'
-
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { updateProfile } from './actions'
-
+import { updateProfile } from '@/services/api'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -25,14 +22,11 @@ export function ProfileForm({
     const [name, setName] = useState(initialName)
     const [isSaving, setIsSaving] = useState(false)
 
-    // Process appointments
     const now = new Date()
     const upcomingAppointments = appointments.filter(app => new Date(app.date_time) > now && app.status !== 'CANCELLED')
     const pastAppointments = appointments.filter(app => new Date(app.date_time) <= now || app.status === 'CANCELLED')
 
-    // Sort upcoming (soonest first)
     upcomingAppointments.sort((a, b) => new Date(a.date_time).getTime() - new Date(b.date_time).getTime())
-
     const nextAppointment = upcomingAppointments.length > 0 ? upcomingAppointments[0] : null
 
     async function handleSubmit(e: React.FormEvent) {
@@ -46,7 +40,7 @@ export function ProfileForm({
 
         setIsSaving(false)
 
-        if (result.error) {
+        if (result?.error) {
             toast.error(result.error)
         } else {
             toast.success('Perfil actualizado correctamente')
