@@ -35,7 +35,8 @@ export function BookingForm({ services, userName }: { services: Service[], userN
                     setLoadingSlots(false)
                 })
                 .catch(err => {
-                    toast.error("Error al cargar disponibilidad")
+                    console.error("DEBUG FETCH ERROR:", err)
+                    toast.error("Error: " + (err.message || "desconocido"))
                     setLoadingSlots(false)
                 })
         }

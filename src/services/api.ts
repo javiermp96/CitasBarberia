@@ -157,11 +157,10 @@ export async function getAvailableSlots(dateString: string, serviceDuration: num
     const { data: availabilities, error: availError } = await supabase
         .from('availability')
         .select('*')
-        .eq('status', 'AVAILABLE')
         .gte('start_time', startOfDay.toISOString())
         .lte('start_time', endOfDay.toISOString())
 
-    if (availError) throw new Error(availError.message)
+    if (availError) throw new Error("availError: " + availError.message)
 
     const { data: appointments, error: apptError } = await supabase
         .from('appointments')
@@ -170,12 +169,12 @@ export async function getAvailableSlots(dateString: string, serviceDuration: num
         .gte('date_time', startOfDay.toISOString())
         .lte('date_time', endOfDay.toISOString())
 
-    if (apptError) throw new Error(apptError.message)
+    if (apptError) throw new Error("apptError: " + apptError.message)
 
     const slots: Date[] = []
 
-    const onlyAvails = availabilities.filter(a => a.status === 'AVAILABLE')
-    const breaks = availabilities.filter(a => a.status === 'BREAK')
+    const onlyAvails = (availabilities || []).filter(a => a.status === 'AVAILABLE')
+    const breaks = (availabilities || []).filter(a => a.status === 'BREAK')
 
     for (const avail of onlyAvails) {
         let currentSlot = new Date(avail.start_time)
@@ -184,7 +183,7 @@ export async function getAvailableSlots(dateString: string, serviceDuration: num
         while (currentSlot.getTime() + serviceDuration * 60000 <= endTime.getTime()) {
             const slotEnd = new Date(currentSlot.getTime() + serviceDuration * 60000)
 
-            const isOverlappingAppt = appointments.some(appt => {
+            const isOverlappingAppt = (appointments || []).some(appt => {
                 const apptStart = new Date(appt.date_time)
                 const apptDuration = (appt.services as any)?.duration || 30 
                 const apptEnd = new Date(apptStart.getTime() + apptDuration * 60000)
