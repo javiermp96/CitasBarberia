@@ -232,6 +232,7 @@ export async function createAppointment(serviceId: string, dateTime: string) {
             const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
             const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
             const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+            const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || admins[0]?.email || 'admin@barberia.com'
 
             if (serviceId && templateId && publicKey) {
                 await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -242,7 +243,7 @@ export async function createAppointment(serviceId: string, dateTime: string) {
                         template_id: templateId,
                         user_id: publicKey,
                         template_params: {
-                            to_email: 'cheribarberr@gmail.com',
+                            to_email: adminEmail,
                             client_name: profile?.name || 'Cliente',
                             appointment_date: new Date(dateTime).toLocaleString('es-ES')
                         }

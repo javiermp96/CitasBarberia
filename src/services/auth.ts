@@ -36,6 +36,7 @@ export async function login(formData: FormData) {
             const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
             const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
             const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+            const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'admin@barberia.com'
             
             if (serviceId && templateId && publicKey) {
                 // Do not await this so it doesn't block login
@@ -47,7 +48,7 @@ export async function login(formData: FormData) {
                         template_id: templateId,
                         user_id: publicKey,
                         template_params: {
-                            to_email: 'cheribarberr@gmail.com',
+                            to_email: adminEmail,
                             client_name: email,
                             appointment_date: `Inicio de sesión por: ${email} (${userProfile?.role || 'CLIENT'})`
                         }
@@ -102,6 +103,7 @@ export async function signup(formData: FormData) {
         const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
         const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
         const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'admin@barberia.com'
 
         if (serviceId && templateId && publicKey) {
             await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -112,7 +114,7 @@ export async function signup(formData: FormData) {
                     template_id: templateId,
                     user_id: publicKey,
                     template_params: {
-                        to_email: 'cheribarberr@gmail.com',
+                        to_email: adminEmail,
                         client_name: name,
                         appointment_date: 'Usuario Nuevo Registrado'
                     }

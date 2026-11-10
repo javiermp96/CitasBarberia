@@ -24,7 +24,7 @@ export default function BarberDashboard() {
                 ])
 
                 setData({ appointments, availabilities, services })
-            } catch (err) {
+            } catch {
                 navigate('/login')
             } finally {
                 setLoading(false)

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { getAvailableSlots, createAppointment } from '@/services/api'
-import { useNavigate } from 'react-router-dom'
 
 type Service = {
     id: string
@@ -15,7 +14,6 @@ type Service = {
 }
 
 export function BookingForm({ services, userName }: { services: Service[], userName: string }) {
-    const navigate = useNavigate()
     const [selectedService, setSelectedService] = useState<Service | null>(null)
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [availableSlots, setAvailableSlots] = useState<string[]>([])
@@ -56,8 +54,7 @@ export function BookingForm({ services, userName }: { services: Service[], userN
             setSelectedService(null)
             setSelectedSlot(null)
             setDate(new Date())
-            // Navigate or refresh state to see new appointments could be done here
-            navigate('/book')
+            window.dispatchEvent(new CustomEvent('appointment-updated'))
         }
     }
 

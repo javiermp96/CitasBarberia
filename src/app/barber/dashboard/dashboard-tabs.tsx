@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { toast } from 'sonner'
-import { updateAppointmentStatus, addAvailability, deleteAvailability, deleteAppointment, addService, updateService, deleteService } from '@/services/api'
+import { updateAppointmentStatus, addAvailability, deleteAvailability, deleteAppointment, addService, updateService, deleteService, getAvailabilities, getAdminServices } from '@/services/api'
 
 type Appointment = {
     id: string
@@ -89,9 +89,10 @@ export function DashboardTabs({
         if (result?.error) {
             toast.error(result.error)
         } else {
-            toast.success('Disponibilidad agregada. (Actualiza la página para verlo)')
+            toast.success('Disponibilidad agregada con éxito')
             setDateStr('')
-            // Should refetch availabilities here properly, skipping for brevity
+            const freshAvails = await getAvailabilities()
+            if (freshAvails) setAvailabilities(freshAvails)
         }
     }
 
@@ -109,8 +110,10 @@ export function DashboardTabs({
         if (result?.error) {
             toast.error(result.error)
         } else {
-            toast.success('Descanso guardado. (Actualiza la página para verlo)')
+            toast.success('Descanso guardado con éxito')
             setBreakDateStr('')
+            const freshAvails = await getAvailabilities()
+            if (freshAvails) setAvailabilities(freshAvails)
         }
     }
 
@@ -163,7 +166,8 @@ export function DashboardTabs({
             setServiceName('')
             setServiceDuration('30')
             setEditingService(null)
-            // Should refetch effectively
+            const freshServices = await getAdminServices()
+            if (freshServices) setServices(freshServices)
         }
     }
 

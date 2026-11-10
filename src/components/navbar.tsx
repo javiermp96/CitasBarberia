@@ -15,7 +15,7 @@ export default function Navbar() {
                 const { user, profile } = await assertUserAuth()
                 setUser(user)
                 if (profile) setRole(profile.role)
-            } catch (err) {
+            } catch {
                 setUser(null)
                 setRole('CLIENT')
             }

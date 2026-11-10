@@ -13,11 +13,11 @@ export default function BookPage() {
     useEffect(() => {
         async function loadData() {
             try {
-                const { profile, user } = await assertUserAuth()
+                const { profile } = await assertUserAuth()
                 setUserName(profile?.name || 'Usuario')
                 const fetchedServices = await getServices()
                 setServices(fetchedServices || [])
-            } catch (err) {
+            } catch {
                 navigate('/login')
             } finally {
                 setLoading(false)

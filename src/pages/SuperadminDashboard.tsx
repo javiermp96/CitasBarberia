@@ -21,7 +21,7 @@ export default function SuperadminDashboard() {
 
                 const fetchedLogs = await getAccessLogs(dateParam)
                 setLogs(fetchedLogs)
-            } catch (err) {
+            } catch {
                 navigate('/login')
             } finally {
                 setLoading(false)

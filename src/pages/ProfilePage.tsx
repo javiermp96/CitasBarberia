@@ -36,7 +36,7 @@ export default function ProfilePage() {
 
                 setProfileData({ ...userProfile, activeEmail: user.email })
                 setAppointments(appts || [])
-            } catch (err) {
+            } catch {
                 navigate('/login')
             } finally {
                 setLoading(false)
